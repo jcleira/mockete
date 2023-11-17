@@ -2,6 +2,9 @@ package mocks
 
 import (
 	"context"
+	"testing"
+
+	"github.com/stretchr/testify/mock"
 )
 
 type MockTestInterface struct {
@@ -19,65 +22,94 @@ func NewMockTestInterface(
 }
 
 type DoSomethingMock struct {
-	ctx  context.Context
-	arg0 string
-
-	r_0 string
-	r_e error
-
-	notCalled bool
+	mock.Mock
 }
 
-func (m *DoSomethingMock) DoSomething(ctx context.Context, arg0 string) (string, error) {
-	return m.r_0, m.r_e
-}
+func (_m *DoSomethingMock) DoSomething(_a0 context.Context, _a1 string) (string, error) {
+	ret := _m.Called(_a0, _a1)
 
-func (m *DoSomethingMock) Return(r_0 string, r_e error) *DoSomethingMock {
-	m.r_0 = r_0
-	m.r_e = r_e
-	return m
-}
-
-func DoSomethingNotCalled() *DoSomethingMock {
-	return &DoSomethingMock{
-		notCalled: true,
+	var r0 string
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) (string, error)); ok {
+		return rf(_a0, _a1)
 	}
+	if rf, ok := ret.Get(0).(func(context.Context, string) string); ok {
+		r0 = rf(_a0, _a1)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(string)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(_a0, _a1)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
-func DoSomething(ctx context.Context, arg0 string) *DoSomethingMock {
-	return &DoSomethingMock{
-		ctx:  ctx,
-		arg0: arg0,
+func (_m *DoSomethingMock) Return(returnArguments ...interface{}) *DoSomethingMock {
+	if len(_m.Mock.ExpectedCalls) == 0 {
+		return _m
 	}
+
+	_m.Mock.ExpectedCalls[0].Return(returnArguments...)
+	return _m
+}
+
+func DoSomething(t *testing.T, ctx context.Context, arg0 string) *DoSomethingMock {
+	mock := &DoSomethingMock{}
+	mock.Mock.Test(t)
+
+	t.Cleanup(func() { mock.AssertExpectations(t) })
+
+	mock.On("DoSomething", ctx, arg0).Return(arg0, nil)
+
+	return mock
 }
 
 type FinishSomethingMock struct {
-	ctx  context.Context
-	arg0 string
-
-	r_e error
-
-	notCalled bool
+	mock.Mock
 }
 
-func (m *FinishSomethingMock) FinishSomething(ctx context.Context, arg0 string) error {
-	return m.r_e
-}
+func (_m *FinishSomethingMock) FinishSomething(_a0 context.Context, _a1 string) error {
+	ret := _m.Called(_a0, _a1)
 
-func (m *FinishSomethingMock) Return(r_e error) *FinishSomethingMock {
-	m.r_e = r_e
-	return m
-}
-
-func FinishSomethingNotCalled() *FinishSomethingMock {
-	return &FinishSomethingMock{
-		notCalled: true,
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = rf(_a0, _a1)
+	} else {
+		r0 = ret.Error(0)
 	}
+
+	return r0
 }
 
-func FinishSomething(ctx context.Context, arg0 string) *FinishSomethingMock {
-	return &FinishSomethingMock{
-		ctx:  ctx,
-		arg0: arg0,
-	}
+func FinishSomething(t *testing.T, ctx context.Context, arg0 string) *FinishSomethingMock {
+	mock := &FinishSomethingMock{}
+	mock.Mock.Test(t)
+
+	t.Cleanup(func() { mock.AssertExpectations(t) })
+
+	mock.On("FinishSomething", ctx, arg0)
+
+	return mock
+}
+
+func (_m *FinishSomethingMock) Return(returnArguments ...interface{}) *FinishSomethingMock {
+	_m.Mock.ExpectedCalls[0].Return(returnArguments...)
+	return _m
+}
+
+func FinishSomethingNotCalled(t *testing.T, returnArguments ...interface{}) *FinishSomethingMock {
+	mock := &FinishSomethingMock{}
+	mock.Mock.Test(t)
+
+	t.Cleanup(func() { mock.AssertExpectations(t) })
+
+	mock.AssertNotCalled(t, "FinishSomething")
+
+	return mock
 }

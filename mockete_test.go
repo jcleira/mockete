@@ -43,15 +43,15 @@ func TestSomeInterface(t *testing.T) {
 		{
 			name:            "test1",
 			arg0:            "test1",
-			DoSomething:     mocks.DoSomething(ctx, "test1").Return("test1", nil),
-			FinishSomething: mocks.FinishSomething(ctx, "test1").Return(nil),
+			DoSomething:     mocks.DoSomething(t, ctx, "test1").Return("test1", nil),
+			FinishSomething: mocks.FinishSomething(t, ctx, "test1").Return(nil),
 			wantError:       nil,
 		},
 		{
 			name:            "test2",
 			arg0:            "test2",
-			DoSomething:     mocks.DoSomething(ctx, "test2").Return("", errors.New("error")),
-			FinishSomething: mocks.FinishSomethingNotCalled(),
+			DoSomething:     mocks.DoSomething(t, ctx, "test2").Return("", errors.New("error")),
+			FinishSomething: mocks.FinishSomethingNotCalled(t),
 			wantError:       errors.New("error"),
 		},
 	}
